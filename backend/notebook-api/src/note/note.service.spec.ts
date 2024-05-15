@@ -16,7 +16,11 @@ describe('NoteService', () => {
         Promise.resolve({ id, title: 'Existing note', content: 'Content', archived: false })),
       delete: jest.fn().mockResolvedValue(undefined),
       find: jest.fn().mockImplementation(({ where: { archived } }) =>
-        Promise.resolve([{ id: Date.now(), title: 'Note', content: 'Content', archived }]))
+        Promise.resolve([{ id: Date.now(), title: 'Note', content: 'Content', archived }])),
+      findOne: jest.fn().mockResolvedValue({
+        id: 1,
+        tags: []
+      }),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -57,6 +61,10 @@ describe('NoteService', () => {
 
   it('should delete a note', async () => {
     await service.deleteNote(1);
+    expect(mockRepository.findOne).toHaveBeenCalledWith({
+      where: { id: 1 },
+      relations: ['tags']
+    });
     expect(mockRepository.delete).toHaveBeenCalledWith(1);
   });
 

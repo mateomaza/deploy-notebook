@@ -57,8 +57,9 @@ describe('TagController', () => {
     expect(service.getTags).toHaveBeenCalled();
   });
 
-  it('should get notes for a tag', async () => {
-    await controller.getNotesForTag(1);
-    expect(service.getNotesForTag).toHaveBeenCalledWith(1);
+  it('should get notes for a tag with specific archived status', async () => {
+    const req = { params: { tagId: 1 }, query: { archived: 'true' } };
+    await controller.getNotesForTag(req.params.tagId, req.query.archived);
+    expect(service.getNotesForTag).toHaveBeenCalledWith(1, 'true');
   });
 });

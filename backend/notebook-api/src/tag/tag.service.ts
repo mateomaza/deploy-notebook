@@ -40,8 +40,11 @@ export class TagService {
     });
 
     if (tag) {
-      tag.notes = tag.notes.filter((note) => note.id !== noteId);
-      await this.tagRepository.save(tag);
+      await this.tagRepository
+      .createQueryBuilder()
+      .relation(Tag, 'notes')
+      .of(tag)
+      .remove(noteId);
     } else {
       throw new Error('Tag not found');
     }
@@ -51,7 +54,7 @@ export class TagService {
     return this.tagRepository.find();
   };
 
-  async getNotesForTag(tagId: number): Promise<Note[]> {
+  async getNotesForTag(tagId: number, type: string): Promise<Note[]> {
     const tag = await this.tagRepository.findOne({
       where: { id: tagId },
       relations: ['notes', 'notes.tags'],
@@ -59,6 +62,7 @@ export class TagService {
     if (!tag) {
       throw new NotFoundException('Tag not found');
     }
-    return tag.notes;
+    const isArchived = type === 'archived';
+    return tag.notes.filter(note => note.archived === isArchived);
   }
 }

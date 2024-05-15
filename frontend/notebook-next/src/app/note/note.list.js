@@ -1,11 +1,11 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import api from "@/services/api";
 import Filter from "../common/filter";
 import NoteForm from "./note.form";
 import PropTypes from "prop-types";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import Chip from '@mui/material/Chip';
+import TagChip from "../tag/tag.chip";
 
 const NoteList = ({ type }) => {
   const [notes, setNotes] = useState([]);
@@ -27,15 +27,18 @@ const NoteList = ({ type }) => {
         fetchNotes();
         return;
       }
-      const response = await api.get(`/tags/${tagId}/notes`);
+      const response = await api.get(`/tags/${tagId}/notes`, {
+        params: { type: type },
+      });
       setNotes(response.data);
     },
-    [fetchNotes]
+    [fetchNotes, type]
   );
 
-  useEffect(() => {
+  const handleSave = () => {
     fetchNotes();
-  }, [type, fetchNotes]);
+    setOpen(false);
+  };
 
   const handleArchive = async (noteId) => {
     await api.put(`/notes/${noteId}/archive`);
@@ -52,14 +55,19 @@ const NoteList = ({ type }) => {
     setOpen(true);
   };
 
+  const handleDelete = async (noteId) => {
+    await api.delete(`/notes/${noteId}`);
+    setNotes(notes.filter((note) => note.id !== noteId));
+  };
+
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleSave = () => {
+  async function removeTagFromNote(tagId, noteId) {
+    await api.delete(`/tags/${tagId}/notes/${noteId}`);
     fetchNotes();
-    setOpen(false);
-  };
+  }
 
   return (
     <>
@@ -78,9 +86,16 @@ const NoteList = ({ type }) => {
               </button>
             )}
             <button onClick={() => handleDelete(note.id)}>Delete</button>
-            {note.tags && note.tags.length > 0 && note.tags.map(tag => (
-              <Chip label={tag.name} key={tag.id} />
-            ))}
+            {note.tags &&
+              note.tags.length > 0 &&
+              note.tags.map((tag) => (
+                <TagChip
+                  key={tag.id}
+                  tag={tag}
+                  noteId={note.id}
+                  onRemove={removeTagFromNote}
+                />
+              ))}
           </li>
         ))}
       </ul>

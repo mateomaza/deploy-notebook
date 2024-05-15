@@ -9,37 +9,41 @@ import { NotFoundException } from '@nestjs/common';
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('TagService', () => {
-    let service: TagService;
-    let tagRepository: MockRepository<Tag>;
-    let noteRepository: MockRepository<Note>;
-  
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          TagService,
-          {
-            provide: getRepositoryToken(Tag),
-            useValue: {
-              create: jest.fn().mockImplementation(dto => ({ ...dto })),
-              save: jest.fn().mockResolvedValue(undefined),
-              findOne: jest.fn().mockResolvedValue(undefined),
-              find: jest.fn().mockResolvedValue([]),
-              delete: jest.fn().mockResolvedValue(undefined),
-            },
+  let service: TagService;
+  let tagRepository: MockRepository<Tag>;
+  let noteRepository: MockRepository<Note>;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        TagService,
+        {
+          provide: getRepositoryToken(Tag),
+          useValue: {
+            create: jest.fn().mockImplementation((dto) => ({ ...dto })),
+            save: jest.fn().mockResolvedValue(undefined),
+            findOne: jest.fn().mockResolvedValue(undefined),
+            find: jest.fn().mockResolvedValue([]),
+            delete: jest.fn().mockResolvedValue(undefined),
+            createQueryBuilder: jest.fn().mockReturnThis(),
+            relation: jest.fn().mockReturnThis(),
+            of: jest.fn().mockReturnThis(),
+            remove: jest.fn(),
           },
-          {
-            provide: getRepositoryToken(Note),
-            useValue: {
-              findOne: jest.fn().mockResolvedValue(undefined),
-            },
+        },
+        {
+          provide: getRepositoryToken(Note),
+          useValue: {
+            findOne: jest.fn().mockResolvedValue(undefined),
           },
-        ],
-      }).compile();
-  
-      service = module.get<TagService>(TagService);
-      tagRepository = module.get(getRepositoryToken(Tag));
-      noteRepository = module.get(getRepositoryToken(Note));
-    });
+        },
+      ],
+    }).compile();
+
+    service = module.get<TagService>(TagService);
+    tagRepository = module.get(getRepositoryToken(Tag));
+    noteRepository = module.get(getRepositoryToken(Note));
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
@@ -63,14 +67,16 @@ describe('TagService', () => {
     noteRepository.findOne.mockResolvedValue(note);
 
     await service.addTagToNote(2, 1);
-    expect(tagRepository.save).toHaveBeenCalledWith({...tag, notes: [note]});
+    expect(tagRepository.save).toHaveBeenCalledWith({ ...tag, notes: [note] });
   });
 
   it('should throw an error if tag or note not found when adding tag to note', async () => {
     tagRepository.findOne.mockResolvedValue(null);
     noteRepository.findOne.mockResolvedValue(null);
 
-    await expect(service.addTagToNote(2, 1)).rejects.toThrow('Tag or Note not found');
+    await expect(service.addTagToNote(2, 1)).rejects.toThrow(
+      'Tag or Note not found',
+    );
   });
 
   it('should remove a tag from a note', async () => {
@@ -79,14 +85,16 @@ describe('TagService', () => {
     tagRepository.findOne.mockResolvedValue(tag);
 
     await service.removeTagFromNote(2, 1);
-    expect(tag.notes.length).toBe(0);
-    expect(tagRepository.save).toHaveBeenCalledWith({ id: 1, notes: [] });
+    expect(tagRepository.createQueryBuilder).toHaveBeenCalled();
+    expect(tagRepository.remove).toHaveBeenCalledWith(2);
   });
 
   it('should throw an error if tag not found when removing tag from note', async () => {
     tagRepository.findOne.mockResolvedValue(null);
 
-    await expect(service.removeTagFromNote(2, 1)).rejects.toThrow('Tag not found');
+    await expect(service.removeTagFromNote(2, 1)).rejects.toThrow(
+      'Tag not found',
+    );
   });
 
   it('should retrieve all tags', async () => {
@@ -98,19 +106,26 @@ describe('TagService', () => {
     expect(tagRepository.find).toHaveBeenCalled();
   });
 
-  it('should retrieve notes for a specific tag', async () => {
-    const notes = [{ id: 1, title: 'Note 1', content: 'Content' }];
+  it('should retrieve notes for a specific tag and archived status', async () => {
+    const notes = [
+      { id: 1, title: 'Note 1', content: 'Content', archived: false },
+    ];
     const tag = { id: 1, notes: notes };
     tagRepository.findOne.mockResolvedValue(tag);
 
-    const result = await service.getNotesForTag(1);
-    expect(result).toEqual(notes);
-    expect(tagRepository.findOne).toHaveBeenCalledWith({ where: { id: 1 }, relations: ['notes', 'notes.tags'] });
+    const result = await service.getNotesForTag(1, 'false');
+    expect(result).toEqual([notes[0]]);
+    expect(tagRepository.findOne).toHaveBeenCalledWith({
+      where: { id: 1 },
+      relations: ['notes', 'notes.tags'],
+    });
   });
 
   it('should throw an error if tag not found when getting notes for tag', async () => {
     tagRepository.findOne.mockResolvedValue(null);
 
-    await expect(service.getNotesForTag(1)).rejects.toThrow(new NotFoundException('Tag not found'));
+    await expect(service.getNotesForTag(1, 'false')).rejects.toThrow(
+      new NotFoundException('Tag not found'),
+    );
   });
 });

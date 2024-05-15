@@ -6,6 +6,7 @@ import {
   Put,
   Delete,
   Get,
+  Query
 } from '@nestjs/common';
 import { TagService } from './tag.service';
 import { Tag } from './tag.entity';
@@ -42,7 +43,10 @@ export class TagController {
   }
 
   @Get(':tagId/notes')
-  async getNotesForTag(@Param('tagId') tagId: number): Promise<Note[]> {
-    return this.tagService.getNotesForTag(tagId);
+  async getNotesForTag(
+    @Param('tagId') tagId: number,
+    @Query('type') type: string
+  ): Promise<Note[]> {
+    return this.tagService.getNotesForTag(tagId, type);
   }
 }

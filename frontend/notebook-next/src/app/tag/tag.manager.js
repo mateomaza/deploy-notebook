@@ -3,7 +3,6 @@ import api from '@/services/api';
 import PropTypes from 'prop-types';
 
 const TagManager = ({ noteId }) => {
-  const [tags, setTags] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
   const [selectedTagId, setSelectedTagId] = useState('');
   const [newTag, setNewTag] = useState('');
@@ -25,14 +24,6 @@ const TagManager = ({ noteId }) => {
       } catch (error) {
         console.error('Failed to add tag:', error);
       }
-    }
-  };
-
-  const handleRemoveTag = async (tagId) => {
-    try {
-      await api.delete(`/tags/${tagId}/notes/${noteId}`);
-    } catch (error) {
-      console.error('Failed to remove tag:', error);
     }
   };
 
@@ -67,14 +58,6 @@ const TagManager = ({ noteId }) => {
         />
         <button onClick={handleCreateTag}>Create Tag</button>
       </div>
-      <ul>
-        {tags.map(tag => (
-          <li key={tag.id}>
-            {tag.name}
-            <button onClick={() => handleRemoveTag(tag.id)}>Remove</button>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };

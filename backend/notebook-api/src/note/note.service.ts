@@ -25,9 +25,18 @@ export class NoteService {
     throw new Error('Note not found');
   }
 
-  async deleteNote(id: number): Promise<void> {
-    await this.noteRepository.delete(id);
-  }
+  async deleteNote(noteId: number): Promise<void> {
+    const note = await this.noteRepository.findOne({
+        where: { id: noteId },
+        relations: ['tags']
+    });
+
+    if (note) {
+        note.tags = [];
+        await this.noteRepository.save(note);
+        await this.noteRepository.delete(noteId);
+    }
+}
 
   async archiveNote(id: number): Promise<Note> {
     const note = await this.noteRepository.findOneBy({ id });
