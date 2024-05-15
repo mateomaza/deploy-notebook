@@ -21,6 +21,11 @@ export class TagController {
     return this.tagService.createTag(name);
   }
 
+  @Delete(':id')
+  deleteTag(@Param('id') tagId: number): Promise<void> {
+    return this.tagService.deleteTag(tagId);
+  }
+
   @Put(':tagId/notes/:noteId')
   addTagToNote(
     @Param('tagId') tagId: number,

@@ -27,16 +27,16 @@ export class NoteService {
 
   async deleteNote(noteId: number): Promise<void> {
     const note = await this.noteRepository.findOne({
-        where: { id: noteId },
-        relations: ['tags']
+      where: { id: noteId },
+      relations: ['tags'],
     });
 
     if (note) {
-        note.tags = [];
-        await this.noteRepository.save(note);
-        await this.noteRepository.delete(noteId);
+      note.tags = [];
+      await this.noteRepository.save(note);
+      await this.noteRepository.delete(noteId);
     }
-}
+  }
 
   async archiveNote(id: number): Promise<Note> {
     const note = await this.noteRepository.findOneBy({ id });
@@ -60,6 +60,9 @@ export class NoteService {
     return this.noteRepository.find({
       where: { archived: false },
       relations: ['tags'],
+      order: {
+        createdAt: 'DESC',
+      },
     });
   }
 
@@ -67,6 +70,9 @@ export class NoteService {
     return this.noteRepository.find({
       where: { archived: true },
       relations: ['tags'],
+      order: {
+        createdAt: 'DESC',
+      },
     });
   }
 }

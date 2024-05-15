@@ -18,12 +18,26 @@ export class TagService {
     return await this.tagRepository.save(tag);
   };
 
-  addTagToNote = async (noteId: number, tagId: number): Promise<void> => {
+  async deleteTag(tagId: number): Promise<void> {
     const tag = await this.tagRepository.findOne({
       where: { id: tagId },
       relations: ['notes'],
     });
+
+    if (tag) {
+      tag.notes = [];
+      await this.tagRepository.save(tag);
+      await this.tagRepository.delete(tagId);
+    }
+  }
+
+  addTagToNote = async (noteId: number, tagId: number): Promise<void> => {
     const note = await this.noteRepository.findOne({ where: { id: noteId } });
+
+    const tag = await this.tagRepository.findOne({
+      where: { id: tagId },
+      relations: ['notes'],
+    });
 
     if (tag && note) {
       tag.notes.push(note);
@@ -41,10 +55,10 @@ export class TagService {
 
     if (tag) {
       await this.tagRepository
-      .createQueryBuilder()
-      .relation(Tag, 'notes')
-      .of(tag)
-      .remove(noteId);
+        .createQueryBuilder()
+        .relation(Tag, 'notes')
+        .of(tag)
+        .remove(noteId);
     } else {
       throw new Error('Tag not found');
     }
@@ -63,6 +77,6 @@ export class TagService {
       throw new NotFoundException('Tag not found');
     }
     const isArchived = type === 'archived';
-    return tag.notes.filter(note => note.archived === isArchived);
+    return tag.notes.filter((note) => note.archived === isArchived);
   }
 }

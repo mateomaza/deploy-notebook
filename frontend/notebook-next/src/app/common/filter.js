@@ -19,12 +19,14 @@ const Filter = ({ onFilter }) => {
   }, [selectedTag, onFilter]);
 
   return (
-    <select onChange={(e) => setSelectedTag(e.target.value)}>
-      <option value="">All Notes</option>
-      {tags.map(tag => (
-        <option key={tag.id} value={tag.id}>{tag.name}</option>
-      ))}
-    </select>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <select onChange={(e) => setSelectedTag(e.target.value)} style={{ marginRight: '10px' }}>
+        <option value="">All Notes</option>
+        {tags.map(tag => (
+          <option key={tag.id} value={tag.id}>{tag.name}</option>
+        ))}
+      </select>
+    </div>
   );
 };
 

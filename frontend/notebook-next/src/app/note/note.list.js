@@ -5,7 +5,11 @@ import NoteForm from "./note.form";
 import PropTypes from "prop-types";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
 import TagChip from "../tag/tag.chip";
+import "../globals.css";
 
 const NoteList = ({ type }) => {
   const [notes, setNotes] = useState([]);
@@ -36,7 +40,11 @@ const NoteList = ({ type }) => {
   );
 
   const handleSave = () => {
+    setOpen(false);
     fetchNotes();
+  };
+
+  const handleClose = () => {
     setOpen(false);
   };
 
@@ -57,11 +65,9 @@ const NoteList = ({ type }) => {
 
   const handleDelete = async (noteId) => {
     await api.delete(`/notes/${noteId}`);
-    setNotes(notes.filter((note) => note.id !== noteId));
-  };
-
-  const handleClose = () => {
-    setOpen(false);
+    setNotes((currentNotes) =>
+      currentNotes.filter((note) => note.id !== noteId)
+    );
   };
 
   async function removeTagFromNote(tagId, noteId) {
@@ -72,34 +78,65 @@ const NoteList = ({ type }) => {
   return (
     <>
       <Filter onFilter={fetchNotesByTag} />
-      <ul>
+      <ul className="note-list">
         {notes.map((note) => (
-          <li key={note.id}>
-            <h3>{note.title}</h3>
-            <p>{note.content}</p>
-            <button onClick={() => handleEdit(note)}>Edit</button>
-            {type === "active" ? (
-              <button onClick={() => handleArchive(note.id)}>Archive</button>
-            ) : (
-              <button onClick={() => handleUnarchive(note.id)}>
-                Unarchive
+          <li key={note.id} className="note-item">
+            <div>
+              <h3 className="note-title">{note.title}</h3>
+              <p className="note-content">{note.content}</p>
+            </div>
+            <div className="note-actions">
+              <button onClick={() => handleEdit(note)} className="note-button">
+                Edit
               </button>
-            )}
-            <button onClick={() => handleDelete(note.id)}>Delete</button>
-            {note.tags &&
-              note.tags.length > 0 &&
-              note.tags.map((tag) => (
-                <TagChip
-                  key={tag.id}
-                  tag={tag}
-                  noteId={note.id}
-                  onRemove={removeTagFromNote}
-                />
-              ))}
+              {type === "active" ? (
+                <button
+                  onClick={() => handleArchive(note.id)}
+                  className="note-button"
+                >
+                  Archive
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleUnarchive(note.id)}
+                  className="note-button"
+                >
+                  Unarchive
+                </button>
+              )}
+              <button
+                onClick={() => handleDelete(note.id)}
+                className="note-button"
+              >
+                Delete
+              </button>
+            </div>
+            <div className="note-tags">
+              {note.tags &&
+                note.tags.length > 0 &&
+                note.tags.map((tag) => (
+                  <TagChip
+                    key={tag.id}
+                    tag={tag}
+                    noteId={note.id}
+                    onRemove={removeTagFromNote}
+                  />
+                ))}
+            </div>
           </li>
         ))}
       </ul>
       <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>
+          Edit Note
+          <IconButton
+            aria-label="close"
+            onClick={handleClose}
+            style={{ position: "absolute", right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
           <NoteForm note={currentNote} onSave={handleSave} />
         </DialogContent>

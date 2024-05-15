@@ -10,16 +10,33 @@ describe('NoteService', () => {
 
   beforeEach(async () => {
     mockRepository = {
-      create: jest.fn().mockImplementation(dto => dto),
-      save: jest.fn().mockImplementation(note => Promise.resolve({ id: Date.now(), ...note })),
-      findOneBy: jest.fn().mockImplementation(({ id }) =>
-        Promise.resolve({ id, title: 'Existing note', content: 'Content', archived: false })),
+      create: jest.fn().mockImplementation((dto) => dto),
+      save: jest
+        .fn()
+        .mockImplementation((note) =>
+          Promise.resolve({ id: Date.now(), ...note }),
+        ),
+      findOneBy: jest
+        .fn()
+        .mockImplementation(({ id }) =>
+          Promise.resolve({
+            id,
+            title: 'Existing note',
+            content: 'Content',
+            archived: false,
+          }),
+        ),
       delete: jest.fn().mockResolvedValue(undefined),
-      find: jest.fn().mockImplementation(({ where: { archived } }) =>
-        Promise.resolve([{ id: Date.now(), title: 'Note', content: 'Content', archived }])),
+      find: jest
+        .fn()
+        .mockImplementation(({ where: { archived } }) =>
+          Promise.resolve([
+            { id: Date.now(), title: 'Note', content: 'Content', archived },
+          ]),
+        ),
       findOne: jest.fn().mockResolvedValue({
         id: 1,
-        tags: []
+        tags: [],
       }),
     };
 
@@ -51,19 +68,26 @@ describe('NoteService', () => {
     const note = await service.updateNote(1, 'Updated Note', 'Updated content');
     expect(note).toBeDefined();
     expect(mockRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
-    expect(mockRepository.save).toHaveBeenCalledWith({ id: 1, title: 'Updated Note', content: 'Updated content', archived: false });
+    expect(mockRepository.save).toHaveBeenCalledWith({
+      id: 1,
+      title: 'Updated Note',
+      content: 'Updated content',
+      archived: false,
+    });
   });
 
   it('should throw an error if note to update is not found', async () => {
     mockRepository.findOneBy = jest.fn().mockResolvedValue(null);
-    await expect(service.updateNote(999, 'Updated Note', 'Updated content')).rejects.toThrow('Note not found');
+    await expect(
+      service.updateNote(999, 'Updated Note', 'Updated content'),
+    ).rejects.toThrow('Note not found');
   });
 
   it('should delete a note', async () => {
     await service.deleteNote(1);
     expect(mockRepository.findOne).toHaveBeenCalledWith({
       where: { id: 1 },
-      relations: ['tags']
+      relations: ['tags'],
     });
     expect(mockRepository.delete).toHaveBeenCalledWith(1);
   });
@@ -85,14 +109,22 @@ describe('NoteService', () => {
   it('should retrieve active notes', async () => {
     const notes = await service.getActiveNotes();
     expect(notes).toBeDefined();
-    expect(notes.every(note => !note.archived)).toBe(true);
-    expect(mockRepository.find).toHaveBeenCalledWith({ where: { archived: false }, relations: ['tags'] });
+    expect(notes.every((note) => !note.archived)).toBe(true);
+    expect(mockRepository.find).toHaveBeenCalledWith({
+      where: { archived: false },
+      relations: ['tags'],
+      order: { createdAt: 'DESC' },
+    });
   });
 
   it('should retrieve archived notes', async () => {
     const notes = await service.getArchivedNotes();
     expect(notes).toBeDefined();
-    expect(notes.every(note => note.archived)).toBe(true);
-    expect(mockRepository.find).toHaveBeenCalledWith({ where: { archived: true }, relations: ['tags'] });
+    expect(notes.every((note) => note.archived)).toBe(true);
+    expect(mockRepository.find).toHaveBeenCalledWith({
+      where: { archived: true },
+      relations: ['tags'],
+      order: { createdAt: 'DESC' },
+    });
   });
 });
