@@ -13,6 +13,7 @@ async function bootstrap() {
       }
     },
     credentials: true,
+    allowedHeaders: 'Content-Type, Authorization',
   });
   if (process.env.NODE_ENV !== 'test') {
     await app.listen(3001);
