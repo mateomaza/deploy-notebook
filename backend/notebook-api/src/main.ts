@@ -2,10 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
   const allowedOrigins = [
     'https://deploy-notebook.vercel.app',
     'https://deploy-notebook.vercel.app/',
   ];
+
   app.enableCors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
