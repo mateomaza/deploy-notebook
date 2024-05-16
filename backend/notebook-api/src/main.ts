@@ -3,6 +3,10 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
+  app.enableCors({
+    origin: 'https://deploy-notebook.vercel.app',
+    credentials: true,
+  });
   if (process.env.NODE_ENV !== 'test') {
     await app.listen(3001);
   }
