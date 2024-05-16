@@ -6,7 +6,6 @@ async function bootstrap() {
   app.enableCors({
     origin: 'https://deploy-notebook.vercel.app',
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
   });
   if (process.env.NODE_ENV !== 'test') {
     await app.listen(3001);
