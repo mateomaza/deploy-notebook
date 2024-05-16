@@ -1,20 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as cors from 'cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({
-    origin: (origin, callback) => {
-      const allowedOrigins = ['https://deploy-notebook.vercel.app', 'https://deploy-notebook.vercel.app/'];
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+  app.use(cors({
+    origin: 'https://deploy-notebook.vercel.app',
     credentials: true,
-    allowedHeaders: 'Content-Type, Authorization',
-  });
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }));
   if (process.env.NODE_ENV !== 'test') {
     await app.listen(3001);
   }
