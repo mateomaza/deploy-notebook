@@ -11,6 +11,7 @@ const TagManager = ({ noteId, onTagChange }) => {
 
   useEffect(() => {
     fetchTags();
+    fetchTagsForNote();
   }, []);
 
   const fetchTags = async () => {
@@ -32,6 +33,7 @@ const TagManager = ({ noteId, onTagChange }) => {
       try {
         await api.put(`/tags/${selectedTagId}/notes/${noteId}`);
         setSelectedTagId("");
+        fetchTagsForNote();
       } catch (error) {
         console.error("Failed to add tag:", error);
       }
@@ -44,10 +46,9 @@ const TagManager = ({ noteId, onTagChange }) => {
       const response = await api.post("/tags", { name: newTag });
       setTags([...tags, response.data]);
       setNewTag("");
+      onTagChange();
       setSuccessMessage("Tag was created successfully.");
       setTimeout(() => setSuccessMessage(""), 5000);
-      onTagChange();
-      fetchTagsForNote();
     } catch (error) {
       console.error("Failed to create tag:", error);
     }
