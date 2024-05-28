@@ -56,7 +56,7 @@ const NoteForm = ({ note, onSave, onTagChange }) => {
       <button type="submit" style={{ margin: "10px 0" }}>
         Save
       </button>
-      {note?.id && <TagManager noteId={note.id} onTagChange={onTagChange} style={{ margin: "10px 0" }} />}
+      {note?.id && <TagManager noteId={note.id} style={{ margin: "10px 0" }} />}
     </form>
   );
 };
@@ -68,7 +68,6 @@ NoteForm.propTypes = {
     content: PropTypes.string,
   }),
   onSave: PropTypes.func.isRequired,
-  onTagChange: PropTypes.func.isRequired,
 };
 
 export default NoteForm;

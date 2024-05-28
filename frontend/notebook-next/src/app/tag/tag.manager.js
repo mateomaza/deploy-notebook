@@ -1,74 +1,19 @@
-import { useState, useEffect, useCallback } from "react";
-import api from "@/services/api";
 import PropTypes from "prop-types";
 
-const TagManager = ({ noteId, onTagChange }) => {
-  const [tags, setTags] = useState([]);
-  const [noteTags, setNoteTags] = useState([]);
-  const [selectedTagId, setSelectedTagId] = useState("");
-  const [newTag, setNewTag] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
-  const fetchTags = useCallback(async () => {
-    try {
-      const response = await api.get("/tags");
-      setTags(response.data);
-    } catch (error) {
-      console.error("Failed to fetch tags:", error);
-    }
-  }, []);
-
-  const fetchTagsForNote = useCallback(async () => {
-    try {
-      const response = await api.get(`/notes/${noteId}/tags`);
-      setNoteTags(response.data);
-    } catch (error) {
-      console.error("Failed to fetch tags for note:", error);
-    }
-  }, [noteId]);
-
-  useEffect(() => {
-    fetchTags();
-    fetchTagsForNote();
-  }, [fetchTags, fetchTagsForNote]);
-
-  const handleAddTag = async () => {
-    if (noteTags.length >= 3) {
-      alert("Notes can only have 3 tags each");
-      return;
-    }
-    if (selectedTagId) {
-      try {
-        await api.put(`/tags/${selectedTagId}/notes/${noteId}`);
-        setSelectedTagId("");
-        fetchTagsForNote();
-      } catch (error) {
-        console.error("Failed to add tag:", error);
-      }
-    }
-  };
-
-  const handleCreateTag = async (e) => {
-    e.preventDefault();
-    try {
-      await fetchTags();
-      const response = await api.post("/tags", { name: newTag });
-      setTags([...tags, response.data]);
-      setNewTag("");
-      setSuccessMessage("Tag was created successfully.");
-      setTimeout(() => setSuccessMessage(""), 5000);
-      onTagChange();
-    } catch (error) {
-      console.error("Failed to create tag:", error);
-    }
-  };
-
+const TagManager = ({
+  tags,
+  selectedTagId,
+  newTag,
+  successMessage,
+  setSelectedTagId,
+  setNewTag,
+  handleAddTag,
+  handleCreateTag
+}) => {
   return (
-    <div style={{ margin: "20px", marginTop: "50px"  }}>
+    <div style={{ margin: "20px", marginTop: "50px" }}>
       <h3 style={{ marginBottom: "10px" }}>Tags</h3>
-      <div
-        style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
-      >
+      <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
         <select
           value={selectedTagId}
           onChange={(e) => setSelectedTagId(e.target.value)}
@@ -92,17 +37,21 @@ const TagManager = ({ noteId, onTagChange }) => {
           style={{ marginRight: "10px" }}
         />
         <button onClick={handleCreateTag}>Create Tag</button>
-        {successMessage && (
-          <p style={{ marginTop: "10px" }}>{successMessage}</p>
-        )}
+        {successMessage && <p style={{ marginTop: "10px" }}>{successMessage}</p>}
       </div>
     </div>
   );
 };
 
 TagManager.propTypes = {
-  noteId: PropTypes.number.isRequired,
-  onTagChange: PropTypes.func.isRequired,
+  tags: PropTypes.array.isRequired,
+  selectedTagId: PropTypes.string.isRequired,
+  newTag: PropTypes.string.isRequired,
+  successMessage: PropTypes.string.isRequired,
+  setSelectedTagId: PropTypes.func.isRequired,
+  setNewTag: PropTypes.func.isRequired,
+  handleAddTag: PropTypes.func.isRequired,
+  handleCreateTag: PropTypes.func.isRequired,
 };
 
 export default TagManager;
