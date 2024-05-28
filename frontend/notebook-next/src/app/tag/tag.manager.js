@@ -52,7 +52,7 @@ const TagManager = ({ noteId, onTagChange }) => {
       setNewTag("");
       setSuccessMessage("Tag was created successfully.");
       setTimeout(() => setSuccessMessage(""), 5000);
-      fetchTags();
+      await fetchTags();
       onTagChange();
     } catch (error) {
       console.error("Failed to create tag:", error);

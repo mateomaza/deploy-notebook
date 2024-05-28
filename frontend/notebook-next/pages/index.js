@@ -7,18 +7,24 @@ const Home = () => {
   const [showArchived, setShowArchived] = useState(false);
   const [showTagDelete, setShowTagDelete] = useState(false);
   const [reload, setReload] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("isLoggedIn") === "true");
   const refetchTags = useRef(null);
 
   const handleLogin = (e) => {
     e.preventDefault();
     if (username === "admin" && password === "password123") {
       setIsLoggedIn(true);
+      localStorage.setItem("isLoggedIn", true);
     } else {
       alert("Invalid credentials");
     }
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.setItem("isLoggedIn", false);
   };
 
   if (!isLoggedIn) {
@@ -83,6 +89,9 @@ const Home = () => {
           onClose={() => setShowTagDelete(false)}
           onTagChange={handleTagChange}
         />
+        <button onClick={handleLogout} style={{ marginLeft: "10px" }}>
+          Logout
+        </button>
       </div>
       <h1>{showArchived ? "Archived Notes" : "Active Notes"}</h1>
       {!showArchived && (
