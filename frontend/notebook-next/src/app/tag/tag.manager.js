@@ -51,7 +51,7 @@ const TagManager = ({ noteId, onTagChange }) => {
   const handleCreateTag = async (e) => {
     e.preventDefault();
     try {
-      fetchTags();
+      await fetchTags();
       const response = await api.post("/tags", { name: newTag });
       setTags([...tags, response.data]);
       setNewTag("");
