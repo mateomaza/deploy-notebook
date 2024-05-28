@@ -40,6 +40,8 @@ const Filter = forwardRef(({ onFilter }, ref) => {
   );
 });
 
+Filter.displayName = "Filter";
+
 Filter.propTypes = {
   onFilter: PropTypes.func.isRequired,
 };
