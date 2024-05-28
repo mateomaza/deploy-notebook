@@ -56,10 +56,7 @@ const TagManager = ({ noteId }) => {
       setTags([...tags, response.data]);
       setNewTag("");
       setSuccessMessage("Tag was created successfully.");
-      setTimeout(() => {
-        setSuccessMessage("");
-        window.location.reload();
-    }, 1500);
+      setTimeout(() => setSuccessMessage(""), 5000);
     } catch (error) {
       console.error("Failed to create tag:", error);
     }
