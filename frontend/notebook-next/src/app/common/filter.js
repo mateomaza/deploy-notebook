@@ -42,7 +42,6 @@ const Filter = forwardRef(({ onFilter }, ref) => {
 
 Filter.propTypes = {
   onFilter: PropTypes.func.isRequired,
-  refetchTags: PropTypes.object.isRequired,
 };
 
 export default Filter;

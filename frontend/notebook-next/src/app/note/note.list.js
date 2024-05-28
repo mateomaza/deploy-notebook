@@ -77,7 +77,7 @@ const NoteList = ({ type, refetchTags }) => {
 
   return (
     <>
-      <Filter onFilter={fetchNotesByTag} refetchTags={refetchTags} />
+      <Filter onFilter={fetchNotesByTag} ref={refetchTags} />
       <ul className="note-list">
         {notes.map((note) => (
           <li key={note.id} className="note-item">
