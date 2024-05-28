@@ -30,8 +30,8 @@ const TagDelete = ({ open, onClose, onTagChange }) => {
 
   const handleDelete = async () => {
     try {
-      await api.delete(`/tags/${selectedTag}`);
       fetchTags();
+      await api.delete(`/tags/${selectedTag}`);
       setSelectedTag("");
       setSuccessMessage("Tag was deleted successfully.");
       setTimeout(() => setSuccessMessage(""), 5000);

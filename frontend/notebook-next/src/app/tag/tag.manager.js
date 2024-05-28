@@ -51,12 +51,12 @@ const TagManager = ({ noteId, onTagChange }) => {
   const handleCreateTag = async (e) => {
     e.preventDefault();
     try {
+      fetchTags();
       const response = await api.post("/tags", { name: newTag });
       setTags([...tags, response.data]);
       setNewTag("");
       setSuccessMessage("Tag was created successfully.");
       setTimeout(() => setSuccessMessage(""), 5000);
-      await fetchTags();
       onTagChange();
     } catch (error) {
       console.error("Failed to create tag:", error);
