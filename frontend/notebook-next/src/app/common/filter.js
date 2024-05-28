@@ -1,8 +1,8 @@
-import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useState, useEffect } from 'react';
 import api from '@/services/api';
 import PropTypes from "prop-types";
 
-const Filter = forwardRef(({ onFilter }, ref) => {
+const Filter = ({ onFilter, refetchTags }) => {
   const [tags, setTags] = useState([]);
   const [selectedTag, setSelectedTag] = useState('');
 
@@ -13,11 +13,10 @@ const Filter = forwardRef(({ onFilter }, ref) => {
 
   useEffect(() => {
     fetchTags();
-  }, []);
-
-  useImperativeHandle(ref, () => ({
-    refetchTags: fetchTags
-  }));
+    if (refetchTags) {
+      refetchTags.current = fetchTags;
+    }
+  }, [refetchTags]);
 
   useEffect(() => {
     onFilter(selectedTag);
@@ -33,11 +32,10 @@ const Filter = forwardRef(({ onFilter }, ref) => {
       </select>
     </div>
   );
-});
+};
 
 Filter.propTypes = {
   onFilter: PropTypes.func.isRequired,
-  onTagChange: PropTypes.func.isRequired,
   refetchTags: PropTypes.object.isRequired
 };
 
