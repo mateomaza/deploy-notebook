@@ -12,7 +12,7 @@ const TagManager = ({ noteId, onTagChange }) => {
   useEffect(() => {
     fetchTags();
     fetchTagsForNote();
-  }, []);
+  }, [fetchTags, fetchTagsForNote]);
 
   const fetchTags = useCallback(async () => {
     try {
@@ -23,10 +23,14 @@ const TagManager = ({ noteId, onTagChange }) => {
     }
   }, []);
 
-  const fetchTagsForNote = async () => {
-    const response = await api.get(`/notes/${noteId}/tags`);
-    setNoteTags(response.data);
-  };
+  const fetchTagsForNote = useCallback(async () => {
+    try {
+      const response = await api.get(`/notes/${noteId}/tags`);
+      setNoteTags(response.data);
+    } catch (error) {
+      console.error("Failed to fetch tags for note:", error);
+    }
+  }, [noteId]);
 
   const handleAddTag = async () => {
     if (noteTags.length >= 3) {
