@@ -32,8 +32,6 @@ const TagManager = ({ noteId, onTagChange }) => {
       try {
         await api.put(`/tags/${selectedTagId}/notes/${noteId}`);
         setSelectedTagId("");
-        fetchTagsForNote();
-        onTagChange();
       } catch (error) {
         console.error("Failed to add tag:", error);
       }
@@ -48,6 +46,8 @@ const TagManager = ({ noteId, onTagChange }) => {
       setNewTag("");
       setSuccessMessage("Tag was created successfully.");
       setTimeout(() => setSuccessMessage(""), 5000);
+      onTagChange();
+      fetchTagsForNote();
     } catch (error) {
       console.error("Failed to create tag:", error);
     }
