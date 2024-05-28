@@ -2,17 +2,21 @@ import { useState, useEffect } from 'react';
 import api from '@/services/api';
 import PropTypes from "prop-types";
 
-const Filter = ({ onFilter }) => {
+const Filter = ({ onFilter, refetchTags }) => {
   const [tags, setTags] = useState([]);
   const [selectedTag, setSelectedTag] = useState('');
 
+  const fetchTags = async () => {
+    const response = await api.get('/tags');
+    setTags(response.data);
+  };
+
   useEffect(() => {
-    const fetchTags = async () => {
-      const response = await api.get('/tags');
-      setTags(response.data);
-    };
     fetchTags();
-  }, []);
+    if (refetchTags) {
+      refetchTags.current = fetchTags;
+    }
+  }, [refetchTags]);
 
   useEffect(() => {
     onFilter(selectedTag);
@@ -31,7 +35,9 @@ const Filter = ({ onFilter }) => {
 };
 
 Filter.propTypes = {
-  onFilter: PropTypes.func.isRequired
+  onFilter: PropTypes.func.isRequired,
+  onTagChange: PropTypes.func.isRequired,
+  refetchTags: PropTypes.object.isRequired
 };
 
 export default Filter;

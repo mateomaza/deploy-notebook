@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import NoteForm from "@/app/note/note.form";
 import NoteList from "@/app/note/note.list";
 import TagDelete from "@/app/tag/tag.delete";
@@ -10,6 +10,7 @@ const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const refetchTags = useRef(null);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -53,6 +54,12 @@ const Home = () => {
     setReload(!reload);
   };
 
+  const handleTagChange = () => {
+    if (refetchTags.current) {
+      refetchTags.current();
+    }
+  };
+
   return (
     <div style={{ margin: "20px" }}>
       <div
@@ -74,15 +81,17 @@ const Home = () => {
         <TagDelete
           open={showTagDelete}
           onClose={() => setShowTagDelete(false)}
+          onTagChange={handleTagChange}
         />
       </div>
       <h1>{showArchived ? "Archived Notes" : "Active Notes"}</h1>
       {!showArchived && (
-        <NoteForm onSave={handleSave} style={{ margin: "20px 0" }} />
+        <NoteForm onSave={handleSave} onTagChange={handleTagChange} style={{ margin: "20px 0" }} />
       )}
       <NoteList
         type={showArchived ? "archived" : "active"}
         key={reload}
+        refetchTags={refetchTags}
         style={{ margin: "20px 0" }}
       />
     </div>

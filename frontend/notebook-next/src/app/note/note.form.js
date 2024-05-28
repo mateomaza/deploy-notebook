@@ -3,7 +3,7 @@ import api from "@/services/api";
 import TagManager from "../tag/tag.manager";
 import PropTypes from "prop-types";
 
-const NoteForm = ({ note, onSave }) => {
+const NoteForm = ({ note, onSave, onTagChange }) => {
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");
 
@@ -19,6 +19,10 @@ const NoteForm = ({ note, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!title || !content) {
+      alert("Title and content cannot be empty");
+      return;
+    }
     try {
       if (note) {
         await api.put(`/notes/${note.id}`, { title, content });
@@ -52,7 +56,7 @@ const NoteForm = ({ note, onSave }) => {
       <button type="submit" style={{ margin: "10px 0" }}>
         Save
       </button>
-      {note?.id && <TagManager noteId={note.id} style={{ margin: "10px 0" }} />}
+      {note?.id && <TagManager noteId={note.id} onTagChange={onTagChange} style={{ margin: "10px 0" }} />}
     </form>
   );
 };
@@ -64,6 +68,7 @@ NoteForm.propTypes = {
     content: PropTypes.string,
   }),
   onSave: PropTypes.func.isRequired,
+  onTagChange: PropTypes.func.isRequired,
 };
 
 export default NoteForm;

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import api from "@/services/api";
 import PropTypes from "prop-types";
 
-const TagManager = ({ noteId }) => {
+const TagManager = ({ noteId, onTagChange }) => {
   const [tags, setTags] = useState([]);
   const [selectedTagId, setSelectedTagId] = useState("");
   const [newTag, setNewTag] = useState("");
@@ -18,6 +18,11 @@ const TagManager = ({ noteId }) => {
   };
 
   const handleAddTag = async () => {
+    const tagsForNote = await api.get(`/notes/${noteId}/tags`);
+    if (tagsForNote.data.length >= 3) {
+      alert("Notes can only have 3 tags each");
+      return;
+    }
     if (selectedTagId) {
       try {
         await api.put(`/tags/${selectedTagId}/notes/${noteId}`);
@@ -36,6 +41,7 @@ const TagManager = ({ noteId }) => {
       setNewTag("");
       setSuccessMessage("Tag was created successfully.");
       setTimeout(() => setSuccessMessage(""), 5000);
+      onTagChange();
     } catch (error) {
       console.error("Failed to create tag:", error);
     }
@@ -80,6 +86,7 @@ const TagManager = ({ noteId }) => {
 
 TagManager.propTypes = {
   noteId: PropTypes.number.isRequired,
+  onTagChange: PropTypes.func.isRequired,
 };
 
 export default TagManager;

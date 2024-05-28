@@ -11,7 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import TagChip from "../tag/tag.chip";
 import "../globals.css";
 
-const NoteList = ({ type }) => {
+const NoteList = ({ type, refetchTags }) => {
   const [notes, setNotes] = useState([]);
   const [open, setOpen] = useState(false);
   const [currentNote, setCurrentNote] = useState(null);
@@ -77,7 +77,7 @@ const NoteList = ({ type }) => {
 
   return (
     <>
-      <Filter onFilter={fetchNotesByTag} />
+      <Filter onFilter={fetchNotesByTag} refetchTags={refetchTags} />
       <ul className="note-list">
         {notes.map((note) => (
           <li key={note.id} className="note-item">
@@ -147,6 +147,7 @@ const NoteList = ({ type }) => {
 
 NoteList.propTypes = {
   type: PropTypes.string.isRequired,
+  refetchTags: PropTypes.object.isRequired
 };
 
 export default NoteList;

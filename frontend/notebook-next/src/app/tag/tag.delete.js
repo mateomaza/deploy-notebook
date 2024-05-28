@@ -8,7 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import PropTypes from "prop-types";
 
-const TagDelete = ({ open, onClose }) => {
+const TagDelete = ({ open, onClose, onTagChange }) => {
   const [tags, setTags] = useState([]);
   const [selectedTag, setSelectedTag] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -33,6 +33,7 @@ const TagDelete = ({ open, onClose }) => {
       setSelectedTag("");
       setSuccessMessage("Tag was deleted successfully.");
       setTimeout(() => setSuccessMessage(""), 5000);
+      onTagChange();
     } catch (error) {
       console.error("Failed to delete tag:", error);
     }
@@ -75,6 +76,7 @@ const TagDelete = ({ open, onClose }) => {
 TagDelete.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  onTagChange: PropTypes.func.isRequired,
 };
 
 export default TagDelete;

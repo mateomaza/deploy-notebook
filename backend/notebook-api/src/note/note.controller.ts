@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { NoteService } from './note.service';
 import { Note } from './note.entity';
+import { Tag } from 'src/tag/tag.entity';
 
 @Controller('notes')
 export class NoteController {
@@ -54,5 +55,10 @@ export class NoteController {
   @Get('archived')
   getArchivedNotes(): Promise<Note[]> {
     return this.noteService.getArchivedNotes();
+  }
+
+  @Get(':id/tags')
+  getTagsForNote(@Param('id') noteId: number): Promise<Tag[]> {
+    return this.noteService.getTagsForNote(noteId);
   }
 }

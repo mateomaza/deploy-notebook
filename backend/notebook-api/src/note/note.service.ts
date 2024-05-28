@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Note } from './note.entity';
+import { Tag } from 'src/tag/tag.entity';
 
 @Injectable()
 export class NoteService {
@@ -74,5 +75,18 @@ export class NoteService {
         createdAt: 'DESC',
       },
     });
+  }
+
+  async getTagsForNote(noteId: number): Promise<Tag[]> {
+    const note = await this.noteRepository.findOne({
+      where: { id: noteId },
+      relations: ['tags'],
+    });
+
+    if (!note) {
+      throw new Error('Note not found');
+    }
+
+    return note.tags;
   }
 }
