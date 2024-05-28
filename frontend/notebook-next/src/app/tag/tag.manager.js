@@ -2,16 +2,21 @@ import { useState, useEffect, useCallback } from "react";
 import api from "@/services/api";
 import PropTypes from "prop-types";
 
-const TagManager = ({
-  noteId,
-  tags,
-  newTag,
-  setNewTag,
-  successMessage,
-  handleCreateTag,
-}) => {
+const TagManager = ({ noteId }) => {
+  const [tags, setTags] = useState([]);
   const [noteTags, setNoteTags] = useState([]);
   const [selectedTagId, setSelectedTagId] = useState("");
+  const [newTag, setNewTag] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const fetchTags = useCallback(async () => {
+    try {
+      const response = await api.get("/tags");
+      setTags(response.data);
+    } catch (error) {
+      console.error("Failed to fetch tags:", error);
+    }
+  }, []);
 
   const fetchTagsForNote = useCallback(async () => {
     try {
@@ -23,8 +28,9 @@ const TagManager = ({
   }, [noteId]);
 
   useEffect(() => {
+    fetchTags();
     fetchTagsForNote();
-  }, [fetchTagsForNote]);
+  }, [fetchTags, fetchTagsForNote]);
 
   const handleAddTag = async () => {
     if (noteTags.length >= 3) {
@@ -39,6 +45,23 @@ const TagManager = ({
       } catch (error) {
         console.error("Failed to add tag:", error);
       }
+    }
+  };
+
+  const handleCreateTag = async (e) => {
+    e.preventDefault();
+    try {
+      await fetchTags();
+      const response = await api.post("/tags", { name: newTag });
+      setTags([...tags, response.data]);
+      setNewTag("");
+      setSuccessMessage("Tag was created successfully.");
+      setTimeout(() => {
+        setSuccessMessage("");
+        window.location.reload();
+    }, 1500);
+    } catch (error) {
+      console.error("Failed to create tag:", error);
     }
   };
 
@@ -81,11 +104,7 @@ const TagManager = ({
 
 TagManager.propTypes = {
   noteId: PropTypes.number.isRequired,
-  tags: PropTypes.array.isRequired,
-  newTag: PropTypes.string.isRequired,
-  setNewTag: PropTypes.func.isRequired,
-  successMessage: PropTypes.string.isRequired,
-  handleCreateTag: PropTypes.func.isRequired,
+  onTagChange: PropTypes.func.isRequired,
 };
 
 export default TagManager;
