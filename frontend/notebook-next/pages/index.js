@@ -107,7 +107,7 @@ const Home = () => {
       </div>
       <h1>{showArchived ? "Archived Notes" : "Active Notes"}</h1>
       {!showArchived && (
-        <NoteForm onSave={handleSave} style={{ margin: "20px 0" }} />
+        <NoteForm onSave={handleSave} onTagChange={handleTagChange} style={{ margin: "20px 0" }} />
       )}
       <NoteList
         type={showArchived ? "archived" : "active"}

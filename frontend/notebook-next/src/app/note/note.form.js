@@ -1,11 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "@/services/api";
 import TagManager from "../tag/tag.manager";
 import PropTypes from "prop-types";
 
-const NoteForm = ({ note, onSave }) => {
+const NoteForm = ({ note, onSave, onTagChange }) => {
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");
+  const [tags, setTags] = useState([]);
+  const [newTag, setNewTag] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (note) {
@@ -38,6 +41,34 @@ const NoteForm = ({ note, onSave }) => {
     }
   };
 
+  const fetchTags = useCallback(async () => {
+    try {
+      const response = await api.get("/tags");
+      setTags(response.data);
+    } catch (error) {
+      console.error("Failed to fetch tags:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTags();
+  }, [fetchTags]);
+
+  const handleCreateTag = async (e) => {
+    e.preventDefault();
+    try {
+      await fetchTags();
+      const response = await api.post("/tags", { name: newTag });
+      setTags([...tags, response.data]);
+      setNewTag("");
+      setSuccessMessage("Tag was created successfully.");
+      setTimeout(() => setSuccessMessage(""), 5000);
+      onTagChange();
+    } catch (error) {
+      console.error("Failed to create tag:", error);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} style={{ margin: "20px" }}>
       <input
@@ -56,7 +87,17 @@ const NoteForm = ({ note, onSave }) => {
       <button type="submit" style={{ margin: "10px 0" }}>
         Save
       </button>
-      {note?.id && <TagManager noteId={note.id} style={{ margin: "10px 0" }} />}
+      {note?.id && (
+        <TagManager
+          noteId={note.id}
+          tags={tags}
+          newTag={newTag}
+          setNewTag={setNewTag}
+          successMessage={successMessage}
+          handleCreateTag={handleCreateTag}
+          style={{ margin: "10px 0" }}
+        />
+      )}
     </form>
   );
 };
@@ -68,6 +109,7 @@ NoteForm.propTypes = {
     content: PropTypes.string,
   }),
   onSave: PropTypes.func.isRequired,
+  onTagChange: PropTypes.func.isRequired,
 };
 
 export default NoteForm;
