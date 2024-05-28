@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "@/services/api";
 import PropTypes from "prop-types";
 
@@ -11,7 +11,6 @@ const TagManager = ({
   setSelectedTagId,
   setNewTag,
   handleCreateTag,
-  onTagChange
 }) => {
   const [noteTags, setNoteTags] = useState([]);
 
@@ -86,7 +85,6 @@ TagManager.propTypes = {
   setSelectedTagId: PropTypes.func.isRequired,
   setNewTag: PropTypes.func.isRequired,
   handleCreateTag: PropTypes.func.isRequired,
-  onTagChange: PropTypes.func.isRequired,
 };
 
 export default TagManager;

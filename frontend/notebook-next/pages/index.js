@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import NoteForm from "@/app/note/note.form";
 import NoteList from "@/app/note/note.list";
 import TagDelete from "@/app/tag/tag.delete";
