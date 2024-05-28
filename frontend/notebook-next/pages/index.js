@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import NoteForm from "@/app/note/note.form";
 import NoteList from "@/app/note/note.list";
 import TagDelete from "@/app/tag/tag.delete";
-import TagManagerWrapper from "@/app/tag/tag.manager.wrapper";
 
 const Home = () => {
   const [showArchived, setShowArchived] = useState(false);
@@ -102,9 +101,6 @@ const Home = () => {
           onClose={() => setShowTagDelete(false)}
           onTagChange={handleTagChange}
         />
-        <div className="d-none">
-          <TagManagerWrapper onTagChange={handleTagChange} />
-        </div>
         <button onClick={handleLogout} style={{ marginLeft: "10px" }}>
           Logout
         </button>
