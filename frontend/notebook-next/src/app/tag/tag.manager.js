@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import api from "@/services/api";
 import PropTypes from "prop-types";
 
@@ -14,14 +14,10 @@ const TagManager = ({ noteId, onTagChange }) => {
     fetchTagsForNote();
   }, []);
 
-  const fetchTags = useCallback(async () => {
-    try {
-      const response = await api.get("/tags");
-      setTags(response.data);
-    } catch (error) {
-      console.error("Failed to fetch tags:", error);
-    }
-  }, []);
+  const fetchTags = async () => {
+    const response = await api.get("/tags");
+    setTags(response.data);
+  };
 
   const fetchTagsForNote = async () => {
     const response = await api.get(`/notes/${noteId}/tags`);
@@ -51,9 +47,10 @@ const TagManager = ({ noteId, onTagChange }) => {
       setTags([...tags, response.data]);
       setNewTag("");
       setSuccessMessage("Tag was created successfully.");
-      setTimeout(() => setSuccessMessage(""), 5000);
-      await fetchTags();
-      onTagChange();
+      setTimeout(() => {
+        setSuccessMessage("");
+        window.location.reload();
+    }, 5000);
     } catch (error) {
       console.error("Failed to create tag:", error);
     }

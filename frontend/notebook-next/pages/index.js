@@ -9,7 +9,7 @@ const Home = () => {
   const [reload, setReload] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("isLoggedIn") === "true");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const refetchTags = useRef(null);
 
   const handleLogin = (e) => {
@@ -26,6 +26,11 @@ const Home = () => {
     setIsLoggedIn(false);
     localStorage.setItem("isLoggedIn", false);
   };
+
+  useEffect(() => {
+    const savedIsLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(savedIsLoggedIn);
+  }, []);
 
   if (!isLoggedIn) {
     return (
