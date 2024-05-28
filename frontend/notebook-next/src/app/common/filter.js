@@ -1,4 +1,4 @@
-import { useState, useEffect, useImperativeHandle } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import api from "@/services/api";
 import PropTypes from "prop-types";
 
