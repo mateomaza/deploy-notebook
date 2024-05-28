@@ -22,9 +22,11 @@ const TagDelete = ({ open, onClose, onTagChange }) => {
     }
   }, []);
 
-  if (open) {
-    fetchTags();
-  }
+  useEffect(() => {
+    if (open) {
+      fetchTags();
+    }
+  }, [open, fetchTags]);
 
   const handleDelete = async () => {
     try {

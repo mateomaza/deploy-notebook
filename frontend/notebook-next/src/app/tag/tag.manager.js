@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 const TagManager = ({ noteId, onTagChange }) => {
   const [tags, setTags] = useState([]);
+  const [noteTags, setNoteTags] = useState([]);
   const [selectedTagId, setSelectedTagId] = useState("");
   const [newTag, setNewTag] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -17,9 +18,13 @@ const TagManager = ({ noteId, onTagChange }) => {
     setTags(response.data);
   };
 
+  const fetchTagsForNote = async () => {
+    const response = await api.get(`/notes/${noteId}/tags`);
+    setNoteTags(response.data);
+  };
+
   const handleAddTag = async () => {
-    const tagsForNote = await api.get(`/notes/${noteId}/tags`);
-    if (tagsForNote.data.length >= 3) {
+    if (noteTags.length >= 3) {
       alert("Notes can only have 3 tags each");
       return;
     }
@@ -27,6 +32,8 @@ const TagManager = ({ noteId, onTagChange }) => {
       try {
         await api.put(`/tags/${selectedTagId}/notes/${noteId}`);
         setSelectedTagId("");
+        fetchTagsForNote();
+        onTagChange();
       } catch (error) {
         console.error("Failed to add tag:", error);
       }
@@ -41,7 +48,6 @@ const TagManager = ({ noteId, onTagChange }) => {
       setNewTag("");
       setSuccessMessage("Tag was created successfully.");
       setTimeout(() => setSuccessMessage(""), 5000);
-      onTagChange();
     } catch (error) {
       console.error("Failed to create tag:", error);
     }
