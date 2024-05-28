@@ -3,7 +3,7 @@ import api from "@/services/api";
 import TagManager from "../tag/tag.manager";
 import PropTypes from "prop-types";
 
-const NoteForm = ({ note, onSave, onTagChange }) => {
+const NoteForm = ({ note, onSave }) => {
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");
 

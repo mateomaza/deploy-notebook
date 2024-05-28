@@ -5,7 +5,6 @@ import TagManager from "./tag.manager";
 
 const TagManagerWrapper = ({ noteId, onTagChange }) => {
   const [tags, setTags] = useState([]);
-  const [noteTags, setNoteTags] = useState([]);
   const [selectedTagId, setSelectedTagId] = useState("");
   const [newTag, setNewTag] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -19,35 +18,9 @@ const TagManagerWrapper = ({ noteId, onTagChange }) => {
     }
   }, []);
 
-  const fetchTagsForNote = useCallback(async () => {
-    try {
-      const response = await api.get(`/notes/${noteId}/tags`);
-      setNoteTags(response.data);
-    } catch (error) {
-      console.error("Failed to fetch tags for note:", error);
-    }
-  }, [noteId]);
-
   useEffect(() => {
     fetchTags();
-    fetchTagsForNote();
-  }, [fetchTags, fetchTagsForNote]);
-
-  const handleAddTag = async () => {
-    if (noteTags.length >= 3) {
-      alert("Notes can only have 3 tags each");
-      return;
-    }
-    if (selectedTagId) {
-      try {
-        await api.put(`/tags/${selectedTagId}/notes/${noteId}`);
-        setSelectedTagId("");
-        fetchTagsForNote();
-      } catch (error) {
-        console.error("Failed to add tag:", error);
-      }
-    }
-  };
+  }, [fetchTags]);
 
   const handleCreateTag = async (e) => {
     e.preventDefault();
@@ -66,13 +39,13 @@ const TagManagerWrapper = ({ noteId, onTagChange }) => {
 
   return (
     <TagManager
+      noteId={noteId}
       tags={tags}
       selectedTagId={selectedTagId}
       newTag={newTag}
       successMessage={successMessage}
       setSelectedTagId={setSelectedTagId}
       setNewTag={setNewTag}
-      handleAddTag={handleAddTag}
       handleCreateTag={handleCreateTag}
     />
   );

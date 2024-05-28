@@ -10,7 +10,7 @@ const Home = () => {
   const [reload, setReload] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("isLoggedIn") === "true");
   const refetchTags = useRef(null);
 
   const handleLogin = (e) => {
@@ -27,11 +27,6 @@ const Home = () => {
     setIsLoggedIn(false);
     localStorage.setItem("isLoggedIn", false);
   };
-
-  useEffect(() => {
-    const savedIsLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    setIsLoggedIn(savedIsLoggedIn);
-  }, []);
 
   if (!isLoggedIn) {
     return (
@@ -95,7 +90,7 @@ const Home = () => {
           onClose={() => setShowTagDelete(false)}
           onTagChange={handleTagChange}
         />
-        <TagManagerWrapper noteId={noteId} onTagChange={handleTagChange} />
+        <TagManagerWrapper onTagChange={handleTagChange} />
         <button onClick={handleLogout} style={{ marginLeft: "10px" }}>
           Logout
         </button>

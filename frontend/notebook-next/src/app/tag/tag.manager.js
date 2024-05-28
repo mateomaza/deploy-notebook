@@ -1,15 +1,49 @@
+import { useEffect, useCallback } from "react";
+import api from "@/services/api";
 import PropTypes from "prop-types";
 
 const TagManager = ({
+  noteId,
   tags,
   selectedTagId,
   newTag,
   successMessage,
   setSelectedTagId,
   setNewTag,
-  handleAddTag,
-  handleCreateTag
+  handleCreateTag,
+  onTagChange
 }) => {
+  const [noteTags, setNoteTags] = useState([]);
+
+  const fetchTagsForNote = useCallback(async () => {
+    try {
+      const response = await api.get(`/notes/${noteId}/tags`);
+      setNoteTags(response.data);
+    } catch (error) {
+      console.error("Failed to fetch tags for note:", error);
+    }
+  }, [noteId]);
+
+  useEffect(() => {
+    fetchTagsForNote();
+  }, [fetchTagsForNote]);
+
+  const handleAddTag = async () => {
+    if (noteTags.length >= 3) {
+      alert("Notes can only have 3 tags each");
+      return;
+    }
+    if (selectedTagId) {
+      try {
+        await api.put(`/tags/${selectedTagId}/notes/${noteId}`);
+        setSelectedTagId("");
+        fetchTagsForNote();
+      } catch (error) {
+        console.error("Failed to add tag:", error);
+      }
+    }
+  };
+
   return (
     <div style={{ margin: "20px", marginTop: "50px" }}>
       <h3 style={{ marginBottom: "10px" }}>Tags</h3>
@@ -44,14 +78,15 @@ const TagManager = ({
 };
 
 TagManager.propTypes = {
+  noteId: PropTypes.number.isRequired,
   tags: PropTypes.array.isRequired,
   selectedTagId: PropTypes.string.isRequired,
   newTag: PropTypes.string.isRequired,
   successMessage: PropTypes.string.isRequired,
   setSelectedTagId: PropTypes.func.isRequired,
   setNewTag: PropTypes.func.isRequired,
-  handleAddTag: PropTypes.func.isRequired,
   handleCreateTag: PropTypes.func.isRequired,
+  onTagChange: PropTypes.func.isRequired,
 };
 
 export default TagManager;
