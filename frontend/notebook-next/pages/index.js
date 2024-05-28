@@ -35,28 +35,35 @@ const Home = () => {
 
   if (!isLoggedIn) {
     return (
-      <div style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        <form onSubmit={handleLogin} style={{ textAlign: 'center' }}>
+      <div
+        style={{
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <form onSubmit={handleLogin} style={{ textAlign: "center" }}>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Username"
-            style={{ display: 'block', margin: '10px auto' }}
+            style={{ display: "block", margin: "10px auto" }}
           />
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            style={{ display: 'block', margin: '10px auto' }}
+            style={{ display: "block", margin: "10px auto" }}
           />
-          <button type="submit" style={{ display: 'block', margin: '10px auto' }}>Login</button>
+          <button
+            type="submit"
+            style={{ display: "block", margin: "10px auto" }}
+          >
+            Login
+          </button>
         </form>
       </div>
     );
@@ -95,7 +102,9 @@ const Home = () => {
           onClose={() => setShowTagDelete(false)}
           onTagChange={handleTagChange}
         />
-        <TagManagerWrapper onTagChange={handleTagChange} />
+        <div className="d-none">
+          <TagManagerWrapper noteId={noteId} onTagChange={handleTagChange} />
+        </div>
         <button onClick={handleLogout} style={{ marginLeft: "10px" }}>
           Logout
         </button>
