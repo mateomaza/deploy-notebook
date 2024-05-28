@@ -103,7 +103,7 @@ const Home = () => {
           onTagChange={handleTagChange}
         />
         <div className="d-none">
-          <TagManagerWrapper noteId={noteId} onTagChange={handleTagChange} />
+          <TagManagerWrapper onTagChange={handleTagChange} />
         </div>
         <button onClick={handleLogout} style={{ marginLeft: "10px" }}>
           Logout
