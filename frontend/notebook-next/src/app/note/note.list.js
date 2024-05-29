@@ -46,7 +46,9 @@ const NoteList = ({ type, refetchTags }) => {
 
   const handleClose = () => {
     setOpen(false);
-    window.location.reload();
+    if (refetchTags.current) {
+      refetchTags.current();
+    }
   };
 
   const handleArchive = async (noteId) => {
